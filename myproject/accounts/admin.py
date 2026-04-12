@@ -1,0 +1,1 @@
+# Admin is not used with mongoengine
