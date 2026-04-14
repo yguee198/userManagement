@@ -1,18 +1,27 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Management System</title>
-    <script>
-      // Set API base URL for production
-      window.API_BASE_URL = window.location.origin + '/api';
-    </script>
-    <script type="module" crossorigin src="/assets/index-DZRAJFUd.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CYRltUBi.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management API</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; background: #f5f5f5; }
+        .container { text-align: center; padding: 40px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        p { color: #666; }
+        .api-links a { display: inline-block; margin: 10px; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .api-links a:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Management API</h1>
+        <p>API is running successfully!</p>
+        <div class="api-links">
+            <a href="/admin/">Admin Panel</a>
+            <a href="/api/auth/login/">Login</a>
+            <a href="/api/auth/register/">Register</a>
+        </div>
+    </div>
+</body>
 </html>
