@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: usermanagement
+    env: python
+    buildCommand: pip install -r myproject/requirements.txt && cd myproject && python manage.py collectstatic --noinput
+    startCommand: cd myproject && gunicorn myproject.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: RENDER
+        value: "true"
+
+databases:
+  - name: usermanagement
+    databaseName: usermanagement
+    user: postgres

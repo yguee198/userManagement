@@ -23,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(Path(__file__).parent, '.env'))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*l&!o**a@=!zhe1n+z+8oloefz!2_mc*sjuf8zk003x(+al)_g'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-*l&!o**a@=!zhe1n+z+8oloefz!2_mc*sjuf8zk003x(+al)_g')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
 # Application definition
 
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,20 +76,39 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
-# Database - Using MySQL (compatible with MariaDB)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'usermanagement',
-        'USER': 'root',
-        'PASSWORD': '97528Yguee!!',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'",
-        },
+# Database configuration
+# Support both local MySQL and Render's DATABASE_URL (PostgreSQL or MySQL)
+import dj_database_url
+
+# Check for Render DATABASE_URL first, fallback to local MySQL
+database_url = os.environ.get('DATABASE_URL')
+
+if database_url:
+    # Parse Render's DATABASE_URL
+    DATABASES = {
+        'default': dj_database_url.parse(database_url, conn_max_age=600)
     }
-}
+else:
+    # Local MySQL configuration
+    db_host = os.environ.get('DB_HOST', 'localhost')
+    db_port = os.environ.get('DB_PORT', '3306')
+    db_name = os.environ.get('DB_NAME', 'usermanagement')
+    db_user = os.environ.get('DB_USER', 'root')
+    db_password = os.environ.get('DB_PASSWORD', '97528Yguee!!')
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': db_name,
+            'USER': db_user,
+            'PASSWORD': db_password,
+            'HOST': db_host,
+            'PORT': db_port,
+            'OPTIONS': {
+                'init_command': "SET sql_mode='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION'",
+            },
+        }
+    }
 
 # Custom User model
 AUTH_USER_MODEL = 'accounts.User'
@@ -125,6 +145,12 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Frontend static files (React build)
+FRONTEND_DIR = BASE_DIR.parent / 'frontend' / 'dist'
+if FRONTEND_DIR.exists():
+    STATICFILES_DIRS = [FRONTEND_DIR]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
