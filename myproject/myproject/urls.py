@@ -28,14 +28,17 @@ urlpatterns = [
     path('api/users/<str:pk>/', views.UserDetailView.as_view(), name='user-detail'),
 ]
 
-# Serve frontend in production
-if not settings.DEBUG or os.environ.get('RENDER'):
+# Serve frontend in production (when DEBUG is False)
+# API routes are defined first and take priority over catch-all
+if not settings.DEBUG:
     from django.views.generic.base import TemplateView
 
-    urlpatterns += [
+    # Root path - must come AFTER API routes
+    urlpatterns = urlpatterns + [
         path('', TemplateView.as_view(template_name='index.html'), name='frontend'),
-        path('<path:path>', TemplateView.as_view(template_name='index.html'), name='frontend-catchall'),
     ]
+    # Catch-all - must come LAST to not override specific routes
+    urlpatterns.append(path('<path:path>', TemplateView.as_view(template_name='index.html'), name='frontend-catchall'))
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
