@@ -28,21 +28,13 @@ urlpatterns = [
     path('api/users/<str:pk>/', views.UserDetailView.as_view(), name='user-detail'),
 ]
 
-# Serve React frontend in production
+# Serve frontend in production
 if not settings.DEBUG or os.environ.get('RENDER'):
-    from django.contrib.staticfiles.views import serve
     from django.views.generic.base import TemplateView
 
-    def render_frontend(request):
-        frontend_dir = settings.BASE_DIR.parent / 'frontend' / 'dist' / 'index.html'
-        if frontend_dir.exists():
-            with open(frontend_dir, 'r') as f:
-                return TemplateView.as_view(template_name='index.html')(request)
-        return serve(request, 'index.html')
-
     urlpatterns += [
-        path('', render_frontend, name='frontend'),
-        path('<path:path>', render_frontend, name='frontend-catchall'),
+        path('', TemplateView.as_view(template_name='index.html'), name='frontend'),
+        path('<path:path>', TemplateView.as_view(template_name='index.html'), name='frontend-catchall'),
     ]
 
 if settings.DEBUG:
